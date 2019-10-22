@@ -7,10 +7,8 @@
    <!-- Bootstrap CSS -->
    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
    <style>@import url('https://fonts.googleapis.com/css?family=Modak&display=swap');</style>
-
+   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
-   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
    <link rel="stylesheet" href="./css/style.css">
@@ -42,16 +40,23 @@
 Login(With Facebook)
 </fb:login-button>
 <div id="orders_list"><div>
-
+<button onclick="window.location.replace('/add_change_user.html');">change user Setting</button>
 
 
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <script>
+	jQuery.noConflict();
+	// onLoad -> checkLoginState() =>upstatus_cb() ->
+	//user	not exist=> redirect to add
+	//user exist => show details()
+	//
+	
     window.fbAsyncInit = function() {
     FB.init({
       appId      : '2316635168602202',
@@ -61,84 +66,96 @@ Login(With Facebook)
     });
       
     FB.AppEvents.logPageView();   
-      
+	checkLoginState();
   };
-
   (function(d, s, id){
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement(s); js.id = id;
-     js.src = "https://connect.facebook.net/en_US/sdk.js";
-     fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
+	var js, fjs = d.getElementsByTagName(s)[0];
+	if (d.getElementById(id)) {return;}
+	js = d.createElement(s); js.id = id;
+	js.src = "https://connect.facebook.net/en_US/sdk.js";
+	fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
 
-
-function createOrder(owner,amount,title,description){
-	$.post('./create',{owner:owner,amount:amount,title:title,description:description},(data)=>{
-				if(data.status=='success'){
-					alert('create Succee! \n please copy the link \n '+'https://link2pay.mipodstudio.com/'+data.orderSerial);
-				}else{
-					alert('create failed');
-				}
-			});
-}
-function deleteOrder(serial,owner){
-	$.post('./delete_order',{serial:serial,owner:owner},(data)=>{
-				if(data.status=='success'){
-					alert('deleted order');
-				}else{
-					alert('failed to delete order');
-				}
-	});
-}
-function upstatus_cb(res){
-    $.post('./user',{owner:res.authResponse.userID},(data)=>{
-					if(data){
-						var owner_json = JSON.parse(data);
-						if(!owner_json.orders.length){
-							owner_json.orders.forEach((order)=>{
-								if(!order.amount) order.amount = undefined ;
-								if(order.status) var order_status = paid; else var order_status = unpaid; 
-								$('#orders_list').append('<h3>'+order.title+'   '+order_status+'   '+order.serial+'   '+(order.amount||'customize Prize')+'   '+order.description+'</h3><button onclick=\"deleteOrder(\''+order.serial+'\',\''+owner_json+'\');">delete</button>');
-							});
-						}else{		//order list is empty
-							$('#orders_list').append('<h1> you haven\'t create any order link</h1>');
-						}
-					}
-					if(data){
-						var owner_json = JSON.parse(data);
-						if(!owner_json.orders.length){
-							owner_json.orders.forEach((order)=>{
-								if(!order.amount) order.amount = undefined ;
-								if(order.status) var order_status = paid; else var order_status = unpaid; 
-								$('#orders_list').append('<h3>'+order.title+'   '+order_status+'   '+order.serial+'   '+(order.amount||'customize Prize')+'   '+order.description+'</h3><button onclick=\"deleteOrder(\''+order.serial+'\',\''+owner_json+'\');">delete</button>');
-							});
-						}else{		//order list is empty
-							$('#orders_list').append('<h1> you haven\'t create any order link</h1>');
-						}
+  function createOrder(owner,amount,title,description){
+		$.post('./create',{owner:owner,amount:amount,title:title,description:description},(data)=>{
+					if(data.status=='success'){
+						alert('create Succee! \n please copy the link \n '+'https://link2pay.mipodstudio.com/'+data.orderSerial);
+					}else{
+						alert('create failed');
 					}
 				});
-}
-function checkLoginState() {
-	FB.getLoginStatus(function(res) {
-		//statusChangeCallback(res);
-		switch(res.status){
-			case 'connected':		//fb owner LOGINED
-				upstatus_cb(res);
-				break;
-			case 'not_authorized':			//not login
-				 FB.login();
-				break;
-			case 'unknown':					//not login
-				 FB.login();
-				break;
-			default:						//not login
-				 FB.login();
-			}
-		//statusChangeCallback(res);
-	});
-}
-$.post('./read_owner');
+	}
+	function deleteOrder(serial,owner){
+		$.post('./delete_order',{serial:serial,owner:owner},(data)=>{
+					if(data.status=='success'){
+						alert('deleted order');
+					}else{
+						alert('failed to delete order');
+					}
+		});
+	}
+	function showUserInfo(data){
+		console.log(data);
+		var owner_json = data;
+				if(!owner_json.orders.length){
+					owner_json.orders.forEach((order)=>{
+						if(!order.amount) order.amount = undefined ;
+						if(order.status) var order_status = paid; else var order_status = unpaid; 
+						$('#orders_list').append('<h3>'+order.title+'   '+order_status+'   '+order.serial+'   '+(order.amount||'customize Prize')+'   '+order.description+'</h3><button onclick=\"deleteOrder(\''+order.serial+'\',\''+owner_json+'\');">delete</button>');
+					});
+				}else{		//order list is empty
+					$('#orders_list').append('<h1> you haven\'t create any order link</h1>');
+				}
+	}
+	function upstatus_cb(res){
+		console.log(res);
+		
+		$.post('./user',{userID:res.authResponse.userID}).done((data)=>{
+			console.log(data);
+			userInfo = JSON.parse(data);
+						if(userInfo.status == 'failed'){
+							window.location.replace('/add_change_user.html');
+						}else if(userInfo.status == 'success'){
+							showUserInfo(data);
+						}else{
+							alert('error');
+						}
+
+		}).fail(function() {
+			alert( "error" );
+		});
+	}
+
+	function checkLoginState() {
+		FB.getLoginStatus(function(res) {
+			//statusChangeCallback(res);
+			switch(res.status){
+				case 'connected':		//fb owner LOGINED
+					if(res.authResponse){
+						upstatus_cb(res);
+					}else{
+						FB.login(checkLoginState(), { scope: 'email,public_profile' });
+					}
+					
+					break;
+				case 'not_authorized':			//not login
+					FB.login(checkLoginState(), { scope: 'email,public_profile' });
+					break;
+				case 'unknown':					//not login
+					FB.login(checkLoginState(),{ scope: 'email,public_profile' });
+					break;
+				default:						//not login
+					FB.login(checkLoginState(),{ scope: 'email,public_profile' });
+				}
+			//statusChangeCallback(res);
+		});
+	}
+
+
+
+
+
+	
 </script>
 
 </body>

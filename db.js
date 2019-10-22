@@ -10,6 +10,7 @@ var userSchema = new schema(
   {
     userID:      { type: String },
     userProfile: {type:String},
+    userName:   {type:String},
     email:     { type: String, unique: true },
     receive_account : {
       bank_code: { type: String, min:3 , max:3},
@@ -24,7 +25,7 @@ function getDate(){
   return timestamp;
 }
 var orderSchema = new schema(
-  { 
+  {
     serial:       { type: String, unique: true  },
     orderUID:       { type: String, unique: true  },
     amount:       { type: Number },
@@ -65,7 +66,7 @@ var user = mongoose.model('users', orderSchema);
         return false;
       }
       //docs.info();
-      
+
       return {serial:orderSerial};
     });
     return {serial:orderSerial};
@@ -97,12 +98,12 @@ exports.pay = (serial,res,resErrorSolu,app_cb)=>{
   function cb(data){
     console.log('fuck'+_order);
     //while(!_order==0);
-    
+
     order.updateOne({serial:serial},{orderUID:createOrderUID()},(err,rawRes)=>{
       if(err) _order=undefined;
       app_cb(_order,res,resErrorSolu);
     });
-    
+
         return _order;
   }
 }
@@ -114,9 +115,8 @@ exports.update_order_status = (serial)=>{
 }
 exports.delete_order = async (serial,userID)=>{
   if(await order.where({serial:serial}).exists()){
-    if(await user.where({userID:userID}).exists()){
       if(await order.where({owner:userID}).exists()){
-        var del_order= await order.where({serial:serial}).findOneAndRemove({serial:serial,owner:userID});
+        var del_order= await order.deleteOne({serial:serial,owner:userID});
         if(del_order){
           return true;
         }else{
@@ -124,26 +124,31 @@ exports.delete_order = async (serial,userID)=>{
         }
 
       }
-    }
+    
   }
 }
-exports.add_user = async (userID,receive_account,userProfile,email)=>{
-  var user_query = await user.findOne({userID:userID});
-  if(user_query){
-    var new_userInfo ={
-      userID:userID,
-      userProfile: userProfile||await user_query.userProfile,
-      email:email||await user_query.email,
-        receive_account : {
-        bank_code: receive_account.bank_code||await user_query.receive_account.bank_code,
-        account:  receive_account.account||await user_query.receive_account.account
+exports.add_change_user = async (userID,userName,receive_account,userProfile,email)=>{
+  var isUserExists =  user.where({userID:userID}).exists();
+  console.log(isUserExists);
+  if(isUserExists){
+       user.findOne({userID:userID},(err,user_query)=>{
+        if(err) return false;
+      var new_userInfo ={
+        userID:userID,
+        userName:userName,
+        userProfile: userProfile|| user_query.userProfile,
+        email:email|| user_query.email,
+          receive_account : {
+          bank_code: receive_account.bank_code|| user_query.receive_account.bank_code,
+          account:  receive_account.account|| user_query.receive_account.account
+        }
+      };
+      if( user.where({userID:userID}).update(new_userInfo)){
+        return true;
+      }else{
+        return false;
       }
-    };
-    if(await user.where({userID:userID}).update(new_userInfo)){
-      return true;
-    }else{
-      return false;
-    }
+    });
   }else{
     var new_user = new user({
       userID:userID,
@@ -163,10 +168,13 @@ exports.add_user = async (userID,receive_account,userProfile,email)=>{
 
 }
 exports.read_user = async (userID)=>{
-  var _user = await user.findOne({userID:userID});
+  var _user =  await user.exists({userID:userID||'undefined'});
+  console.log(_user);console.log(userID);
   if(_user){
     var userJSON =0;
-    await _user.select('userID userProfile email receive_account').exec((err,data)=>{
+    var data;
+    await user.findOne({userID:userID},'userID userProfile email receive_account',(err,data)=>{
+       if(err) console.log(err);
       var userJSON = {
         userID:data.userID,
         userProfile: data.userProfile,

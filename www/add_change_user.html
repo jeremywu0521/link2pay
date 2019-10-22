@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Payment</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>@import url('https://fonts.googleapis.com/css?family=Modak&display=swap');</style>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./css/style.css">
+
+</head>
+  <body>
+    <nav class="navbar navbar-expand-sm navbar-warning bg-warning">
+        <a class="navbar-brand" href="#">Facebook LOGO</a>
+        <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId" aria-controls="collapsibleNavId"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavId">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Catelog <span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="text" placeholder="Search">
+                <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+
+    <fb:login-button class="fb-login"
+    scope="public_profile,email"
+    onlogin="checkLoginState();">
+  Login(With Facebook)
+  </fb:login-button>
+  <div id="orders_list"><div>
+  <button onclick="window.location.replace('/add_change_user.html');">change user Setting</button>
+  
+  
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script>
+        jQuery.noConflict();
+        window.fbAsyncInit = function() {
+        FB.init({
+            appId      : '2316635168602202',
+            cookie     : true,
+            xfbml      : true,
+            version    : 'v4.0'
+        });
+      
+        FB.AppEvents.logPageView();   
+	    checkLoginState();
+     };
+    (function(d, s, id){
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {return;}
+        js = d.createElement(s); js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
+        function add_change_user(userID,userName,receive_account,receive_account_bank_code,userProfile,email){
+            $.post('./add_change_user',{userID:userID,userName:userName,receive_account:receive_account,receive_account_bank_code:receive_account_bank_code,userProfile:userProfile,email:email}).done((data)=>{
+                console.log(data);
+                userInfo = JSON.parse(data);
+                            if(userInfo.status == 'failed'){
+                                alert('error');
+                            }else if(userInfo.status == 'success'){
+                                window.location.replace('/fb_console.html');
+                            }else{
+                                alert('error');
+                            }
+        
+            }).fail(function() {
+                alert( "error" );
+            });
+        }
+    var fb_userID = 0;
+    function upstatus_cb(res){
+        fb_userID = res.authResponse.userID;
+        FB.api('/me', function(me_res) {
+              console.log('Successful login for: ' + me_res.name);
+              add_change_user(fb_userID, me_res.name.toString(),'jeremy_atm','jeremy_bank',me_res.public_profile,me_res.email);   //userID,receive_account,receive_account_bank_code,userProfile,email
+            // document.getElementById('status').innerHTML = Thanks for logging in, ' + response.name + '!';
+        });
+      
+    }
+	function checkLoginState() {
+		FB.getLoginStatus(function(res) {
+			//statusChangeCallback(res);
+			switch(res.status){
+				case 'connected':		//fb owner LOGINED
+					if(res.authResponse){
+						upstatus_cb(res);
+					}else{
+						FB.login(checkLoginState(), { scope: 'email,public_profile' });
+					}
+					
+					break;
+				case 'not_authorized':			//not login
+					FB.login(checkLoginState(), { scope: 'email,public_profile' });
+					break;
+				case 'unknown':					//not login
+					FB.login(checkLoginState(),{ scope: 'email,public_profile' });
+					break;
+				default:						//not login
+					FB.login(checkLoginState(),{ scope: 'email,public_profile' });
+				}
+			//statusChangeCallback(res);
+		});
+	}
+	
+            
+        </script>
+  </body>
+</html>
