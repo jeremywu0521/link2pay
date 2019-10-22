@@ -9,6 +9,7 @@ var schema = mongoose.Schema;
 var userSchema = new schema(
   {
     userID:      { type: String },
+    userProfile: {type:String},
     email:     { type: String, unique: true },
     receive_account : {
       bank_code: { type: String, min:3 , max:3},
@@ -126,22 +127,59 @@ exports.delete_order = async (serial,userID)=>{
     }
   }
 }
-exports.create_user = (serial,res,resErrorSolu,app_cb)=>{
-   
+exports.add_user = async (userID,receive_account,userProfile,email)=>{
+  var user_query = await user.findOne({userID:userID});
+  if(user_query){
+    var new_userInfo ={
+      userID:userID,
+      userProfile: userProfile||await user_query.userProfile,
+      email:email||await user_query.email,
+        receive_account : {
+        bank_code: receive_account.bank_code||await user_query.receive_account.bank_code,
+        account:  receive_account.account||await user_query.receive_account.account
+      }
+    };
+    if(await user.where({userID:userID}).update(new_userInfo)){
+      return true;
+    }else{
+      return false;
+    }
+  }else{
+    var new_user = new user({
+      userID:userID,
+      userProfile: userProfile,
+      email:email,
+        receive_account : {
+        bank_code: receive_account.bank_code,
+        account:  receive_account.account
+      }
+    });
+    if(await new_user.save()){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
 }
-exports.read_user = (serial,res,resErrorSolu,app_cb)=>{
-  var _order=0;
-  order.find({ serial: serial }, 'serial orderUID amount title description owner status create_at update_at',(err,data)=>{
-    if(err) app_cb(_order,res,resErrorSolu);
-    console.log(data);
-    _order=data[0];
-    cb(data);
-  }).exec();
-  function cb(data){
-    console.log('fuck'+_order);
-    //while(!_order==0);
-    app_cb(_order,res,resErrorSolu);
-        return _order;
+exports.read_user = async (userID)=>{
+  var _user = await user.findOne({userID:userID});
+  if(_user){
+    var userJSON =0;
+    await _user.select('userID userProfile email receive_account').exec((err,data)=>{
+      var userJSON = {
+        userID:data.userID,
+        userProfile: data.userProfile,
+        email:   data.email ,
+          receive_account : {
+          bank_code: data.receive_account.bank_code,
+          account:   data.receive_account.account
+        }
+      };
+    });
+    return userJSON; //success : obj (true) | failed : 0 (false)
+  }else{
+    return false;
   }
 }
 function createOrderSerial(){

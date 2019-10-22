@@ -72,6 +72,33 @@ app.post('/create',async (req,res)=>{
     }
 
 });
+app.post('/delete',async (req,res)=>{
+    var _delete = db.delete_order(req.body.serial,req.body.userID);
+    if(_delete){
+        res.send(JSON.stringify({status:'success'}));
+    }else{
+        res.send(JSON.stringify({status:'failed'}))
+    }
+    
+});
+app.post('/user',async (req,res)=>{
+    var userInfo = await db.read_user(req.body.userID);
+    if(userInfo){
+        userInfo.status = 'success';
+        res.send(JSON.stringify(userInfo));
+    }else{
+        res.send(JSON.stringify({status:'failed'}));
+    }
+});
+app.post('/add_user',async (req,res)=>{
+    var _add_user = await db.add_order(req.body.userID,{bank_code:req.body.receive_account_bank_code,account:req.body.receive_account},req.body.userProfile,req.body.email);
+
+    if(_add_user){
+        res.send(JSON.stringify({status:'success'}));
+    }else{
+        res.send(JSON.stringify({status:'failed'}))
+    }
+});
 app.use('/',express.static('./www/'));
 
 app.listen(5487);
