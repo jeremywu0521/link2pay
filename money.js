@@ -4,7 +4,7 @@ const ecpay_payment = ecpay;
 var db = require('./db');
 var exports;
 exports.ecpay_all = (orderDetail,orderSerial,res)=>{
-
+  if(!(orderDetail.orderUID&&orderDetail.create_at&&orderDetail.amount&&orderDetail.title)) return false;
   if(orderDetail){
     if(orderDetail.amount==0) return false;
     let base_param = {

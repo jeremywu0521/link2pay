@@ -16,8 +16,7 @@ var userSchema = new schema(
     },
     create_at: { type: Date, default: Date.now },
     update_at: { type: Date, default: Date.now }
-  },
-  { collection: 'users' }
+  },{ collection: 'users' }
 );
 function getDate(){
   const timestamp = moment().format('YYYY/M/D hh:mm:ss');
@@ -42,13 +41,14 @@ var orderSchema = new schema(
 var order = mongoose.model('orders', orderSchema);
 var user = mongoose.model('users', orderSchema);
 
-exports.add_order = (amount,type,title,description,owner,extra) =>{
+ exports.add_order = async (amount,type,title,description,owner,extra) =>{
   if(!title&&owner){
     return false
   }
   orderSerial = createOrderSerial();
   var new_order = new order({
     serial: orderSerial,
+    orderUID: createOrderUID(),
     amount: amount||0,
     type: type||'all',
     title: title,
@@ -58,17 +58,20 @@ exports.add_order = (amount,type,title,description,owner,extra) =>{
     update_at:   getDate(),
     extra: extra || {}
   }) ;
-    new_order.save(function (err, docs) {
-      if (err) return console.error(err);
+    var hi = await new_order.save(function (err, docs) {
+      if (err) {
+        console.log(err);
+        return false;
+      }
       //docs.info();
-
-
-    });
+      
       return {serial:orderSerial};
+    });
+    return {serial:orderSerial};
 }
-exports.read_order = (serial,res,resErrorSolu,app_cb)=>{
+exports.read_order = async (serial,res,resErrorSolu,app_cb)=>{
   var _order=0;
-  order.find({ serial: serial }, 'serial orderUID amount title description owner status create_at update_at',(err,data)=>{
+  await order.find({ serial: serial }, 'serial orderUID amount title description owner status create_at update_at',(err,data)=>{
     if(err) app_cb(_order,res,resErrorSolu);
     console.log(data);
     _order=data[0];
@@ -108,7 +111,7 @@ exports.update_order_status = (serial)=>{
   });
   return true;
 }
-exports.delete_order = (serial,userID)=>{
+exports.delete_order = async (serial,userID)=>{
   if(await order.where({serial:serial}).exists()){
     if(await user.where({userID:userID}).exists()){
       if(await order.where({owner:userID}).exists()){
