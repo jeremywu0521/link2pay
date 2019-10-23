@@ -55,23 +55,44 @@
     <script>
         jQuery.noConflict();
         window.fbAsyncInit = function() {
-        FB.init({
-            appId      : '2316635168602202',
-            cookie     : true,
-            xfbml      : true,
-            version    : 'v4.0'
-        });
+    FB.init({
+      appId      : '2316635168602202',
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v4.0'
+    });
       
-        FB.AppEvents.logPageView();   
-	    checkLoginState();
-     };
-    (function(d, s, id){
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) {return;}
-        js = d.createElement(s); js.id = id;
-        js.src = "https://connect.facebook.net/en_US/sdk.js";
-        fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
+    FB.AppEvents.logPageView();   
+	//checkLoginState();
+	FB.getLoginStatus(function(res) {
+		switch(res.status){
+				case 'connected':		//fb owner LOGINED
+					if(res.authResponse){
+						upstatus_cb(res);
+					}else{
+						FB.login(checkLoginState(), { scope: 'email,public_profile' });
+					}
+					
+					break;
+				case 'not_authorized':			//not login
+				FB.login(checkLoginState(res),{ scope: 'email,public_profile' });;
+					break;
+				case 'unknown':					//not login
+				FB.login(checkLoginState(res),{ scope: 'email,public_profile' });
+					break;
+				default:						//not login
+					FB.login(checkLoginState(res),{ scope: 'email,public_profile' });
+				}
+			//statusChangeCallback(res);
+		});
+  };
+  (function(d, s, id){
+	var js, fjs = d.getElementsByTagName(s)[0];
+	if (d.getElementById(id)) {return;}
+	js = d.createElement(s); js.id = id;
+	js.src = "https://connect.facebook.net/en_US/sdk.js";
+	fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
 
         function add_change_user(userID,userName,receive_account,receive_account_bank_code,userProfile,email){
             $.post('./add_change_user',{userID:userID,userName:userName,receive_account:receive_account,receive_account_bank_code:receive_account_bank_code,userProfile:userProfile,email:email}).done((data)=>{
@@ -99,8 +120,8 @@
         });
       
     }
-	function checkLoginState() {
-		FB.getLoginStatus(function(res) {
+	function checkLoginState(res) {
+
 			//statusChangeCallback(res);
 			switch(res.status){
 				case 'connected':		//fb owner LOGINED
@@ -121,7 +142,7 @@
 					FB.login(checkLoginState(),{ scope: 'email,public_profile' });
 				}
 			//statusChangeCallback(res);
-		});
+		
 	}
 	
             

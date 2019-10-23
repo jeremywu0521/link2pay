@@ -142,8 +142,8 @@ exports.add_change_user =  async (userID,userName,receive_account,userProfile,em
        new_userInfo ={
         userID:userID,
         userName:userName,
-        userProfile: userProfile|| user_query.userProfile,
-        email:email|| user_query.email,
+        userProfile: userProfile|| user_query.userProfile||' ',
+        email:email|| user_query.email||' ',
           receive_account : {
           bank_code: receive_account.bank_code|| user_query.receive_account.bank_code,
           account:  receive_account.account|| user_query.receive_account.account
@@ -154,7 +154,7 @@ exports.add_change_user =  async (userID,userName,receive_account,userProfile,em
       var _new_user = await  (await user.findOne({userID:userID})).updateOne(new_userInfo,(err,rawRes)=>{
         if(err) { console.log(err);return false;
         }
-        return true
+        //return true
       });
       console.log(_new_user);
       if(_new_user){
@@ -183,7 +183,7 @@ exports.add_change_user =  async (userID,userName,receive_account,userProfile,em
       }
       //docs.info();
 
-      return true;
+      //return true;
     });
       return true;
   
@@ -207,7 +207,7 @@ exports.read_user = async (userID)=>{
           bank_code: data.receive_account.bank_code,
           account:   data.receive_account.account
         }
-      };
+      }; return userJSON;
     });
     if(userJSON){
       return userJSON; //success : obj (true) | failed : 0 (false)

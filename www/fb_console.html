@@ -57,24 +57,7 @@ Login(With Facebook)
 	//user exist => show details()
 	//
 	
-    window.fbAsyncInit = function() {
-    FB.init({
-      appId      : '2316635168602202',
-      cookie     : true,
-      xfbml      : true,
-      version    : 'v4.0'
-    });
-      
-    FB.AppEvents.logPageView();   
-	checkLoginState();
-  };
-  (function(d, s, id){
-	var js, fjs = d.getElementsByTagName(s)[0];
-	if (d.getElementById(id)) {return;}
-	js = d.createElement(s); js.id = id;
-	js.src = "https://connect.facebook.net/en_US/sdk.js";
-	fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));
+ 
 
   function createOrder(owner,amount,title,description){
 		$.post('./create',{owner:owner,amount:amount,title:title,description:description},(data)=>{
@@ -126,10 +109,51 @@ Login(With Facebook)
 		});
 	}
 
-	function checkLoginState() {
-		FB.getLoginStatus(function(res) {
+	function checkLoginState(res) {
+
 			//statusChangeCallback(res);
 			switch(res.status){
+				case 'connected':		//fb owner LOGINED
+					if(res.authResponse){
+						upstatus_cb(res);
+					}else{
+
+					location.reload();
+					}
+					
+					break;
+				case 'not_authorized':			//not login
+				//FB.login(checkLoginState(res),{ scope: 'email,public_profile' });;
+				//alert(' please auth fb login requirement');
+				//location.reload();
+					break;
+				case 'unknown':					//not login
+				//FB.login(checkLoginState(res),{ scope: 'email,public_profile' });
+				//alert('fb login error please retry');
+				//location.reload();
+					break;
+				default:						//not login
+				//location.reload();
+				}
+			//statusChangeCallback(res);
+	
+	}
+
+
+
+
+	window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '2316635168602202',
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v4.0'
+    });
+      
+    FB.AppEvents.logPageView();   
+	//checkLoginState();
+	FB.getLoginStatus(function(res) {
+		switch(res.status){
 				case 'connected':		//fb owner LOGINED
 					if(res.authResponse){
 						upstatus_cb(res);
@@ -139,23 +163,25 @@ Login(With Facebook)
 					
 					break;
 				case 'not_authorized':			//not login
-					FB.login(checkLoginState(), { scope: 'email,public_profile' });
+				FB.login(checkLoginState(res),{ scope: 'email,public_profile' });;
 					break;
 				case 'unknown':					//not login
-					FB.login(checkLoginState(),{ scope: 'email,public_profile' });
+				FB.login(checkLoginState(res),{ scope: 'email,public_profile' });
 					break;
 				default:						//not login
-					FB.login(checkLoginState(),{ scope: 'email,public_profile' });
+					FB.login(checkLoginState(res),{ scope: 'email,public_profile' });
 				}
 			//statusChangeCallback(res);
 		});
-	}
+  };
+  (function(d, s, id){
+	var js, fjs = d.getElementsByTagName(s)[0];
+	if (d.getElementById(id)) {return;}
+	js = d.createElement(s); js.id = id;
+	js.src = "https://connect.facebook.net/en_US/sdk.js";
+	fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
 
-
-
-
-
-	
 </script>
 
 </body>
