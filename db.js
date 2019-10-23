@@ -8,12 +8,12 @@ mongoose.connect('mongodb+srv://mipod-test1:mipod-0521@mipod-db-u4ido.gcp.mongod
 var schema = mongoose.Schema;
 var userSchema = new schema(
   {
-    userID:      { type: String },
-    userProfile: {type:String},
-    userName:   {type:String},
-    email:     { type: String, unique: true },
+    userID:      { type: String ,unique: true },
+    userProfile: {type:String,  default: ' ' },
+    userName:   {type:String , default: ' ' },
+    email:     { type: String},
     receive_account : {
-      bank_code: { type: String, min:3 , max:3},
+      bank_code: { type: String},
       account:   { type: String}
     },
     create_at: { type: Date, default: Date.now },
@@ -41,7 +41,7 @@ var orderSchema = new schema(
   { collection: 'orders' }
 );
 var order = mongoose.model('orders', orderSchema);
-var user = mongoose.model('users', orderSchema);
+var user = mongoose.model('users', userSchema);
 
  exports.add_order = async (amount,type,title,description,owner,extra) =>{
   if(!title&&owner){
@@ -114,8 +114,8 @@ exports.update_order_status = (serial)=>{
   return true;
 }
 exports.delete_order = async (serial,userID)=>{
-  if(await order.where({serial:serial}).exists()){
-      if(await order.where({owner:userID}).exists()){
+  if(await order.exists({serial:serial})){
+      if(await order.exists({owner:userID})){
         var del_order= await order.deleteOne({serial:serial,owner:userID});
         if(del_order){
           return true;
@@ -125,15 +125,21 @@ exports.delete_order = async (serial,userID)=>{
 
       }
     
+  }else{
+    return false;
   }
 }
-exports.add_change_user = async (userID,userName,receive_account,userProfile,email)=>{
-  var isUserExists =  user.where({userID:userID}).exists();
+exports.add_change_user =  async (userID,userName,receive_account,userProfile,email)=>{
+  var isUserExists =   await user.where({userID:userID});
   console.log(isUserExists);
-  if(isUserExists){
-       user.findOne({userID:userID},(err,user_query)=>{
-        if(err) return false;
-      var new_userInfo ={
+  console.log(await user.exists({userID:userID}));
+  if(await user.exists({userID:userID})){
+    var new_userInfo=0;
+    await user.findOne({userID:userID},(err,user_query)=>{
+        if(err){
+          console.log(err);return false;
+        } 
+       new_userInfo ={
         userID:userID,
         userName:userName,
         userProfile: userProfile|| user_query.userProfile,
@@ -142,13 +148,24 @@ exports.add_change_user = async (userID,userName,receive_account,userProfile,ema
           bank_code: receive_account.bank_code|| user_query.receive_account.bank_code,
           account:  receive_account.account|| user_query.receive_account.account
         }
-      };
-      if( user.where({userID:userID}).update(new_userInfo)){
+       };
+    });
+    if(new_userInfo){
+      var _new_user = await  (await user.findOne({userID:userID})).updateOne(new_userInfo,(err,rawRes)=>{
+        if(err) { console.log(err);return false;
+        }
+        return true
+      });
+      console.log(_new_user);
+      if(_new_user){
         return true;
       }else{
         return false;
       }
-    });
+    }else{
+      return false;
+    }
+    
   }else{
     var new_user = new user({
       userID:userID,
@@ -159,23 +176,30 @@ exports.add_change_user = async (userID,userName,receive_account,userProfile,ema
         account:  receive_account.account
       }
     });
-    if(await new_user.save()){
+    await new_user.save(function (err, docs) {
+      if (err) {
+        console.log(err);
+        return false;
+      }
+      //docs.info();
+
       return true;
-    }else{
-      return false;
-    }
+    });
+      return true;
+  
   }
 
 }
 exports.read_user = async (userID)=>{
-  var _user =  await user.exists({userID:userID||'undefined'});
+  var _user =  await user.findOne({userID:userID});
+ //var _user = true;
   console.log(_user);console.log(userID);
-  if(_user){
+  if(await user.exists({userID:userID})){
     var userJSON =0;
-    var data;
     await user.findOne({userID:userID},'userID userProfile email receive_account',(err,data)=>{
        if(err) console.log(err);
-      var userJSON = {
+       console.log(data);
+      userJSON = {
         userID:data.userID,
         userProfile: data.userProfile,
         email:   data.email ,
@@ -185,7 +209,33 @@ exports.read_user = async (userID)=>{
         }
       };
     });
-    return userJSON; //success : obj (true) | failed : 0 (false)
+    if(userJSON){
+      return userJSON; //success : obj (true) | failed : 0 (false)
+    }else return false;
+
+  }else{
+    return false;
+  }
+}
+exports.read_userOrders = async (owner)=>{
+  var orders=0;
+  await order.find({owner:owner},(err,data)=>{
+    if(err){
+      console.log(err);
+      return false;
+    } 
+    console.log(data);
+    if(data){
+      orders=data;
+      return data;
+    }else{
+      orders=[];
+      return data;
+    }
+
+  });
+  if(orders){
+    return orders;
   }else{
     return false;
   }

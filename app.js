@@ -38,7 +38,7 @@ app.use('/:orderSerial',async (req,res,next)=>{
         next();
     }
 });
-app.get('/payment/:orderSerial',(req,res)=>{
+app.use('/payment/:orderSerial',(req,res)=>{
     if(req.params.orderSerial){
         function db_callback(data,res,resErrorSolu){
             if(!(!data||data=='error_linkExpired')){
@@ -84,19 +84,27 @@ app.post('/delete',async (req,res)=>{
 });
 app.post('/user',async (req,res)=>{
     var userInfo = await db.read_user(req.body.userID);
+    console.log('user',userInfo);
     if(userInfo){
         userInfo.status = 'success';
-        console.log(userInfo);
-        res.send(JSON.stringify(userInfo));
+        var userOrders=await db.read_userOrders();
+        console.log(userOrders);
+        if(userOrders||userOrders==[]){
+            userInfo.orders =  userOrders;
+            console.log(userInfo);
+            res.send(JSON.stringify(userInfo));
+        }else{
+             res.send(JSON.stringify({status:'failed'}));
+        }
+       
     }else{
         res.send(JSON.stringify({status:'failed'}));
     }
 });
-app.post('/add_change_user',async (req,res)=>{
-    req = JSON.parse(req);
-  console.log(req.body.userID,req,body.userName,{bank_code:req.body.receive_account_bank_code,account:req.body.receive_account},req.body.userProfile,req.body.email);
-    var _add_user = await db.add_change_user(req.body.userID,req,body.userName,{bank_code:req.body.receive_account_bank_code,account:req.body.receive_account},req.body.userProfile,req.body.email);
-
+app.post('/add_change_user',async (req,res)=>{ //req = JSON.parse(req);
+  console.log(req.body.userID,req.body.userName,{bank_code:req.body.receive_account_bank_code,account:req.body.receive_account},req.body.userProfile,req.body.email);
+    var _add_user = await db.add_change_user(req.body.userID,req.body.userName,{bank_code:req.body.receive_account_bank_code,account:req.body.receive_account},req.body.userProfile,req.body.email);
+    console.log('damn',_add_user);
     if(_add_user){
         res.send(JSON.stringify({status:'success'}));
     }else{

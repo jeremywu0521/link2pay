@@ -97,7 +97,7 @@ Login(With Facebook)
 	function showUserInfo(data){
 		console.log(data);
 		var owner_json = data;
-				if(!owner_json.orders.length){
+				if(owner_json.orders){
 					owner_json.orders.forEach((order)=>{
 						if(!order.amount) order.amount = undefined ;
 						if(order.status) var order_status = paid; else var order_status = unpaid; 
