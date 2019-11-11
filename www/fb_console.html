@@ -93,7 +93,7 @@ Login(With Facebook)
 	function upstatus_cb(res){
 		console.log(res);
 		
-		$.post('./user',{userID:res.authResponse.userID}).done((data)=>{
+		$.post('./user',{userID:res.authResponse.userID.toString()}).done((data)=>{
 			console.log(data);
 			userInfo = JSON.parse(data);
 						if(userInfo.status == 'failed'){
@@ -123,17 +123,18 @@ Login(With Facebook)
 					
 					break;
 				case 'not_authorized':			//not login
-				//FB.login(checkLoginState(res),{ scope: 'email,public_profile' });;
+				FB.login(checkLoginState,{ scope: 'email,public_profile' });;
 				//alert(' please auth fb login requirement');
 				//location.reload();
 					break;
 				case 'unknown':					//not login
-				//FB.login(checkLoginState(res),{ scope: 'email,public_profile' });
+				FB.login(checkLoginState,{ scope: 'email,public_profile' });
 				//alert('fb login error please retry');
 				//location.reload();
 					break;
 				default:						//not login
 				//location.reload();
+				FB.login(checkLoginState,{ scope: 'email,public_profile' });
 				}
 			//statusChangeCallback(res);
 	
@@ -152,27 +153,7 @@ Login(With Facebook)
       
     FB.AppEvents.logPageView();   
 	//checkLoginState();
-	FB.getLoginStatus(function(res) {
-		switch(res.status){
-				case 'connected':		//fb owner LOGINED
-					if(res.authResponse){
-						upstatus_cb(res);
-					}else{
-						FB.login(checkLoginState(), { scope: 'email,public_profile' });
-					}
-					
-					break;
-				case 'not_authorized':			//not login
-				FB.login(checkLoginState(res),{ scope: 'email,public_profile' });;
-					break;
-				case 'unknown':					//not login
-				FB.login(checkLoginState(res),{ scope: 'email,public_profile' });
-					break;
-				default:						//not login
-					FB.login(checkLoginState(res),{ scope: 'email,public_profile' });
-				}
-			//statusChangeCallback(res);
-		});
+	FB.getLoginStatus(checkLoginState);
   };
   (function(d, s, id){
 	var js, fjs = d.getElementsByTagName(s)[0];

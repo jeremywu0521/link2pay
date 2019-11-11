@@ -135,7 +135,7 @@ exports.add_change_user =  async (userID,userName,receive_account,userProfile,em
   console.log(await user.exists({userID:userID}));
   if(await user.exists({userID:userID})){
     var new_userInfo=0;
-    await user.findOne({userID:userID},(err,user_query)=>{
+    await ( user.findOne({userID:userID},(err,user_query)=>{
         if(err){
           console.log(err);return false;
         } 
@@ -149,9 +149,9 @@ exports.add_change_user =  async (userID,userName,receive_account,userProfile,em
           account:  receive_account.account|| user_query.receive_account.account
         }
        };
-    });
+    })).then();
     if(new_userInfo){
-      var _new_user = await  (await user.findOne({userID:userID})).updateOne(new_userInfo,(err,rawRes)=>{
+      var _new_user = await  (await (user.findOne({userID:userID}))).updateOne(new_userInfo,(err,rawRes)=>{
         if(err) { console.log(err);return false;
         }
         //return true
@@ -184,6 +184,8 @@ exports.add_change_user =  async (userID,userName,receive_account,userProfile,em
       //docs.info();
 
       //return true;
+    }).catch((err)=>{
+      return false;
     });
       return true;
   
@@ -196,11 +198,11 @@ exports.read_user = async (userID)=>{
   console.log(_user);console.log(userID);
   if(await user.exists({userID:userID})){
     var userJSON =0;
-    await user.findOne({userID:userID},'userID userProfile email receive_account',(err,data)=>{
+    await ( user.findOne({userID:userID.toString()},'userID userProfile email receive_account',(err,data)=>{
        if(err) console.log(err);
        console.log(data);
       userJSON = {
-        userID:data.userID,
+        userID:data.userID.toString(),
         userProfile: data.userProfile,
         email:   data.email ,
           receive_account : {
@@ -208,10 +210,15 @@ exports.read_user = async (userID)=>{
           account:   data.receive_account.account
         }
       }; return userJSON;
-    });
-    if(userJSON){
-      return userJSON; //success : obj (true) | failed : 0 (false)
-    }else return false;
+    }).exec()).then();
+      //if(userJSON!==0){
+        return  userJSON; //success : obj (true) | failed : 0 (false)
+      //}else return false;
+    
+
+   
+    
+
 
   }else{
     return false;
