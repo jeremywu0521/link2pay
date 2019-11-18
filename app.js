@@ -4,14 +4,15 @@ const db = require('./db');
 const money = require('./money');
 const path = require('path');
 var bodyParser = require('body-parser');
-
+var mail = require('./mail');
+const mipodstudio_middleware_express = require('./libs/security/express-middleware-mipodservices_nodes');
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
 app.use(bodyParser.json());
-
-app.use('/:orderSerial',async (req,res,next)=>{
+app.use(mipodstudio_middleware_express.services);
+app.use('/:orderSerial',async (req,res,next)=>{     //ok
     if(!(req.params.orderSerial.indexOf('mipodpay')==-1)){
         function db_callback(data,res,resErrorSolu){
             if(data){
@@ -38,7 +39,7 @@ app.use('/:orderSerial',async (req,res,next)=>{
         next();
     }
 });
-app.use('/payment/:orderSerial',(req,res)=>{
+app.use('/payment/:orderSerial',(req,res)=>{        //ok
     if(req.params.orderSerial){
         function db_callback(data,res,resErrorSolu){
             if(!(!data||data=='error_linkExpired')){
@@ -57,7 +58,7 @@ app.use('/payment/:orderSerial',(req,res)=>{
         resErrorSolu('payment_error',res);
     }
 });
-app.post('/create',async (req,res)=>{
+app.post('/create',async (req,res)=>{       //ok
     console.log(req.body.title,req.body.owner,req.body.amount);
     if(req.body.title&&req.body.owner&&req.body.amount){
         var add_order = await db.add_order(req.body.amount,req.body.type||'',req.body.title,req.body.description||'',req.body.owner,req.body.extra||{});
@@ -72,9 +73,9 @@ app.post('/create',async (req,res)=>{
     }
 
 });
-app.post('/delete',async (req,res)=>{
+app.post('/delete',async (req,res)=>{       //ok
     
-    var _delete = db.delete_order(req.body.serial,req.body.owner);
+    var _delete = await db.delete_order(req.body.serial,req.body.owner);
     if(_delete){
         res.send(JSON.stringify({status:'success'}));
     }else{
@@ -111,6 +112,24 @@ app.post('/add_change_user',async (req,res)=>{ //req = JSON.parse(req);
         res.send(JSON.stringify({status:'failed'}))
     }
 });
+app.post('/payment_ecpay_return',(req,res)=>{
+    if(db.update_order_status(req.body.MerchantTradeNo)){
+        if(req.body.RtnCode==1||'1'){
+            res.send('1|OK');
+            res.end();
+            mail.sendMail_paid(req.body.MerchantTradeNo);
+        }else{
+            res.send(' ');
+            res.end();
+        }
+
+    }else{
+        res.send(' ');
+        res.end();
+    }
+
+});
+app.post('/payment_ecpay_result');
 app.use('/',express.static('./www/'));
 
 app.listen(5487);

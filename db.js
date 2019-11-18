@@ -86,6 +86,13 @@ exports.read_order = async (serial,res,resErrorSolu,app_cb)=>{
         return _order;
   }
 }
+exports.readOrder = async (orderUID)=>{
+  var _order= await order.findOne({ orderUID: orderUID }, 'serial orderUID amount title description owner status create_at update_at',(err,data)=>{
+    if(err) return false;
+    console.log(data);
+  }).exec();
+  return _order;
+}
 exports.pay = (serial,res,resErrorSolu,app_cb)=>{
   var _order=0;
   order.find({ serial: serial }, 'serial orderUID amount title description owner status create_at update_at',(err,data)=>{
@@ -107,13 +114,14 @@ exports.pay = (serial,res,resErrorSolu,app_cb)=>{
         return _order;
   }
 }
-exports.update_order_status = (serial)=>{
-  order.updateOne({serial:serial},{status:true},(err,rawRes)=>{
+exports.update_order_status = (orderUID)=>{
+  order.updateOne({orderUID:orderUID},{status:true},(err,rawRes)=>{
     if(err) return false;
   });
   return true;
 }
 exports.delete_order = async (serial,userID)=>{
+  console.log(await order.exists({serial:serial}));
   if(await order.exists({serial:serial})){
       if(await order.exists({owner:userID})){
         var del_order= await order.deleteOne({serial:serial,owner:userID});
@@ -135,36 +143,36 @@ exports.add_change_user =  async (userID,userName,receive_account,userProfile,em
   console.log(await user.exists({userID:userID}));
   if(await user.exists({userID:userID})){
     var new_userInfo=0;
-    await ( user.findOne({userID:userID},(err,user_query)=>{
+    
+    var userInfo = user.findOne({userID:userID},(err,user_query)=>{
         if(err){
           console.log(err);return false;
         } 
-       new_userInfo ={
-        userID:userID,
-        userName:userName,
-        userProfile: userProfile|| user_query.userProfile||' ',
-        email:email|| user_query.email||' ',
+        console.log(user_query);
+    });
+      console.log(new_userInfo);
+      new_userInfo ={
+        userID:userID||userInfo.userID,
+        userName:userName||userInfo.userName,
+        userProfile: userProfile|| userInfo.userProfile||' ',
+        email:email|| userInfo.email||' ',
           receive_account : {
-          bank_code: receive_account.bank_code|| user_query.receive_account.bank_code,
-          account:  receive_account.account|| user_query.receive_account.account
+          bank_code: receive_account.bank_code|| userInfo.receive_account.bank_code,
+          account:  receive_account.account|| userInfo.receive_account.account
         }
        };
-    })).then();
-    if(new_userInfo){
-      var _new_user = await  (await (user.findOne({userID:userID}))).updateOne(new_userInfo,(err,rawRes)=>{
-        if(err) { console.log(err);return false;
-        }
-        //return true
-      });
-      console.log(_new_user);
-      if(_new_user){
-        return true;
+      if(new_userInfo){
+        await  user.updateOne({userID:userID},new_userInfo,(err,rawRes)=>{
+          if(err) { console.log(err);return false;
+          }
+          //return true
+        });
+          return true;
+
       }else{
         return false;
       }
-    }else{
-      return false;
-    }
+
     
   }else{
     var new_user = new user({
@@ -184,10 +192,8 @@ exports.add_change_user =  async (userID,userName,receive_account,userProfile,em
       //docs.info();
 
       //return true;
-    }).catch((err)=>{
-      return false;
     });
-      return true;
+    return true;
   
   }
 
@@ -197,33 +203,26 @@ exports.read_user = async (userID)=>{
  //var _user = true;
   console.log(_user);console.log(userID);
   if(await user.exists({userID:userID})){
-    var userJSON =0;
-    await ( user.findOne({userID:userID.toString()},'userID userProfile email receive_account',(err,data)=>{
-       if(err) console.log(err);
+    var userData =await user.findOne({userID:userID.toString()},'userID userProfile email receive_account',(err,data)=>{
+       if(err) {console.log(err);return false;}
        console.log(data);
-      userJSON = {
-        userID:data.userID.toString(),
-        userProfile: data.userProfile,
-        email:   data.email ,
-          receive_account : {
-          bank_code: data.receive_account.bank_code,
-          account:   data.receive_account.account
-        }
-      }; return userJSON;
-    }).exec()).then();
-      //if(userJSON!==0){
-        return  userJSON; //success : obj (true) | failed : 0 (false)
-      //}else return false;
-    
-
-   
-    
-
-
+      
+    }).exec().then();
+    var userJSON = {
+      userID:userData.userID.toString(),
+      userProfile: userData.userProfile,
+      email:   userData.email ,
+        receive_account : {
+        bank_code: userData.receive_account.bank_code,
+        account:   userData.receive_account.account
+      }
+    }; 
+    return userJSON;
   }else{
     return false;
   }
 }
+
 exports.read_userOrders = async (owner)=>{
   var orders=0;
   await order.find({owner:owner},(err,data)=>{
