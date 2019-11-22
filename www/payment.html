@@ -1,88 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+	<link rel="shortcut icon" href="assets/images/logo2.png" type="image/x-icon">
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <title>Payment</title>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <style>@import url('https://fonts.googleapis.com/css?family=Modak&display=swap');</style>
-
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="./css/style.css">
-    <script>
-        function getCookie(cname){
-          var name = cname + "=";
-          var ca = document.cookie.split(';');
-          for(var i=0; i<ca.length; i++)
-          {
-            var c = ca[i].trim();
-            if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+	
+	<title>link2pay</title>
+	<link rel="stylesheet" href="assets/web/assets/mobirise-icons/mobirise-icons.css">
+	<link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="assets/bootstrap/css/bootstrap-grid.min.css">
+	<link rel="stylesheet" href="assets/bootstrap/css/bootstrap-reboot.min.css">
+	<link rel="stylesheet" href="assets/tether/tether.min.css">
+	<link rel="stylesheet" href="assets/dropdown/css/style.css">
+	<link rel="stylesheet" href="assets/theme/css/style.css">
+	<link rel="preload" as="style" href="assets/mobirise/css/mbr-additional.css"><link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
+	
+	<script>
+      function getCookie(cname){
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++)
+        {
+          var c = ca[i].trim();
+          if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+        }
+        return "";
+      }
+      var amount = getCookie('amount'),
+          title  = getCookie('title'),
+          description = getCookie('description'),
+          fb_profile = getCookie('fb_profile'),
+          status = getCookie('status');
+      if(status==false||status=='false'){
+          var order_status_info = 'unpaid';
+      }else{
+          var order_status_info = 'link expired';
+      }
+      if(description=='no%20description') description = '';
+      function goPayment(){
+          if(status==false||status=='false'){
+            window.location.replace('/payment/'+getCookie('orderSerial'));
+          }else{
+              alert('link expired' + status);
           }
-          return "";
-        }
-        var amount = getCookie('amount'),
-            title  = getCookie('title'),
-            description = getCookie('description'),
-            fb_profile = getCookie('fb_profile'),
-            status = getCookie('status');
-        if(status==false||status=='false'){
-            var order_status_info = 'unpaid';
-        }else{
-            var order_status_info = 'link expired';
-        }
-        if(description=='no%20description') description = '';
-        function goPayment(){
-            if(status==false||status=='false'){
-              window.location.replace('/payment/'+getCookie('orderSerial'));
-            }else{
-                alert('link expired' + status);
-            }
-          
-        }
+        
+      }
 
-      </script>
-      <!-- 手機使用超商條碼付款請橫幅 -->
+    </script>
+    <!-- 手機使用超商條碼付款請橫幅 -->
 </head>
-  <body>
-    <nav class="navbar navbar-expand-sm navbar-warning bg-warning">
-        <a class="navbar-brand" href="#">Facebook LOGO</a>
-        <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId" aria-controls="collapsibleNavId"
-            aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+<section class="menu cid-rFJZuJqK7i" once="menu" id="menu1-c">
+
+    
+
+    <nav class="navbar navbar-expand beta-menu navbar-dropdown align-items-center navbar-fixed-top navbar-toggleable-sm bg-color transparent">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </button>
-        <div class="collapse navbar-collapse" id="collapsibleNavId">
-            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">Catelog <span class="sr-only">(current)</span></a>
+        <div class="menu-logo">
+            <div class="navbar-brand">
+                
+                <span class="navbar-caption-wrap"><a class="navbar-caption text-success display-1" href="https://link2pay.mipodstudio.com">
+                        link2pay&nbsp;</a></span>
+            </div>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav nav-dropdown" data-app-modern-menu="true"><li class="nav-item">
+                    <a class="nav-link link text-white display-4" href="index.html">
+                        <span class="mbri-home mbr-iconfont mbr-iconfont-btn"></span>
+                        Services
+                    </a>
                 </li>
-            </ul>
-            <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="text" placeholder="Search">
-                <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
-            </form>
+                <li class="nav-item">
+                    <a class="nav-link link text-white display-4" href="http://link2pay.mipodstudio.com/add_change_user.html"><span class="mbri-setting3 mbr-iconfont mbr-iconfont-btn"></span>
+                        
+                        Setting</a>
+                </li></ul>
+            <div class="navbar-buttons mbr-section-btn"><a class="btn btn-sm btn-success display-4" href="http://link2pay.mipodstudio.com/fb_console.html"><span class="mbri-align-left mbr-iconfont mbr-iconfont-btn"></span>
+                    
+                    Console</a></div>
         </div>
     </nav>
-    <h1 id="order_title"></h1>
-    <h3 id="order_amount"></h3>
-    <h3 id="order_description"></h3>
-    <h3 id="order_status"></h3>
-    <div class="payment_btn"><button onclick="goPayment();">Pay!</button></div>
-    <h4>手機使用超商條碼付款請橫幅</h4>
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</section>
+
+<section class="engine"><a href=""></a></section><section class="cid-rFKb5IM3v1 mbr-fullscreen" id="header2-e">
+    <div class="container ">
+            <h1 id="order_title"></h1>
+            <h3 id="order_amount"></h3>
+            <h3 id="order_description"></h3>
+            <h3 id="order_status"></h3>
+            <h4>手機使用超商條碼付款請橫幅</h4>
+                
+                
+                
+                
+                <div class="mbr-section-btn">
+				        	<a class="btn btn-md btn-secondary display-4" onclick="goPayment();" >Pay!</a>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
+<section once="footers" class="cid-rFK8yYAPQn fixed-bottom" id="footer6-d">
+
+    <div class="container ">
+        <div class="media-container-row align-center mbr-white">
+            <div class="col-12">
+                <p class="mbr-text mb-0 mbr-fonts-style display-7">
+                    ©Mipod Studio - link2pay beta for contest demo only&nbsp;</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+  
+ 
+ 
+    
+<script src="assets/web/assets/jquery/jquery.min.js"></script>
+<script src="assets/popper/popper.min.js"></script>
+<script src="assets/bootstrap/js/bootstrap.min.js"></script>
+<script src="assets/tether/tether.min.js"></script>
+<script src="assets/smoothscroll/smooth-scroll.js"></script>
+<script src="assets/dropdown/js/nav-dropdown.js"></script>
+<script src="assets/dropdown/js/navbar-dropdown.js"></script>
+<script src="assets/touchswipe/jquery.touch-swipe.min.js"></script>
+<script src="assets/parallax/jarallax.min.js"></script>
+<script src="assets/theme/js/script.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script>
     //final Rollup element
+        title = decodeURIComponent(title);
+        description = decodeURIComponent(description);
         $('#order_title').text(title) ;
         $('#order_amount').text('Amount:    '+amount+'   .NTD');
         $('#order_description').text(description);

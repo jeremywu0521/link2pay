@@ -121,18 +121,13 @@ exports.update_order_status = (orderUID)=>{
   return true;
 }
 exports.delete_order = async (serial,userID)=>{
-  console.log(await order.exists({serial:serial}));
-  if(await order.exists({serial:serial})){
-      if(await order.exists({owner:userID})){
+  
+  var isOrder =await order.exists({serial:serial,owner:userID});
+  console.log(isOrder);
+  if(isOrder){
         var del_order= await order.deleteOne({serial:serial,owner:userID});
-        if(del_order){
-          return true;
-        }else{
-          return false;
-        }
-
-      }
-    
+        console.log(del_order);
+        return true;
   }else{
     return false;
   }
@@ -157,8 +152,8 @@ exports.add_change_user =  async (userID,userName,receive_account,userProfile,em
         userProfile: userProfile|| userInfo.userProfile||' ',
         email:email|| userInfo.email||' ',
           receive_account : {
-          bank_code: receive_account.bank_code|| userInfo.receive_account.bank_code,
-          account:  receive_account.account|| userInfo.receive_account.account
+          bank_code: receive_account.bank_code|| userInfo.receive_account.bank_code||' ',
+          account:  receive_account.account|| userInfo.receive_account.account||' '
         }
        };
       if(new_userInfo){
@@ -224,13 +219,14 @@ exports.read_user = async (userID)=>{
 }
 
 exports.read_userOrders = async (owner)=>{
-  var orders=0;
-  await order.find({owner:owner},(err,data)=>{
+  
+  console.log('agv',owner);
+  var orders= order.find({owner:owner},(err,data)=>{
     if(err){
       console.log(err);
       return false;
     } 
-    console.log(data);
+    //console.log(data);
     if(data){
       orders=data;
       return data;
@@ -240,6 +236,7 @@ exports.read_userOrders = async (owner)=>{
     }
 
   });
+  console.log(orders);
   if(orders){
     return orders;
   }else{

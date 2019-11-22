@@ -21,7 +21,7 @@ exports.sendMail_paid = async (orderUID)=>{
                     
     console.log(htmlContent,userInfo.email);
     mailTransport.sendMail({
-        from: 'link2pay <mipodstudio@gmail.com>',
+        from: 'no-reply(link2pay) <mipodstudio@gmail.com>',
         to: 'jeremywu0521@gmail.com',
         subject: 'Your Order - '+orderInfo.serial+' is got paid',
         html: htmlContent

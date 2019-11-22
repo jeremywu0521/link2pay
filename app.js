@@ -88,7 +88,7 @@ app.post('/user',async (req,res)=>{
     console.log('user',userInfo);
     if(userInfo){
         userInfo.status = 'success';
-        var userOrders=await db.read_userOrders();
+        var userOrders=await db.read_userOrders(req.body.userID);
         console.log(userOrders);
         if(userOrders||userOrders==[]){
             userInfo.orders =  userOrders;
