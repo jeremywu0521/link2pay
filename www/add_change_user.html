@@ -36,7 +36,7 @@
         <div class="menu-logo">
             <div class="navbar-brand">
                 <span class="navbar-caption-wrap"><a class="navbar-caption text-success display-1"
-                        href="https://mobirise.co">
+                        href="https://link2pay.mipodstudio.com/">
                         link2pay&nbsp;</a>
                 </span>
             </div>
@@ -51,14 +51,14 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link link text-white display-4"
-                        href="http://link2pay.mipodstudio.com/add_change_user.html">
+                        href="https://link2pay.mipodstudio.com/add_change_user.html">
                         <span class="mbri-setting3 mbr-iconfont mbr-iconfont-btn"></span>
                         Setting
                     </a>
                 </li>
             </ul>
             <div class="navbar-buttons mbr-section-btn">
-                <a class="btn btn-sm btn-success display-4" href="http://link2pay.mipodstudio.com/fb_console.html">
+                <a class="btn btn-sm btn-success display-4" href="https://link2pay.mipodstudio.com/fb_console.html">
                     <span class="mbri-align-left mbr-iconfont mbr-iconfont-btn"></span>
                     Console
                 </a>
@@ -149,13 +149,7 @@
             version: 'v4.0'
         });
 
-        (function (d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) { return; }
-            js = d.createElement(s); js.id = id;
-            js.src = "https://connect.facebook.net/en_US/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
+
 
         FB.AppEvents.logPageView();   //ONLOAD  facebook login
         FB.getLoginStatus(function (res) {
@@ -178,7 +172,18 @@
             }
             //statusChangeCallback(res);
         });
+
     };
+
+
+    (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) { return; }
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
 
 
     function submit() {
@@ -234,7 +239,7 @@
             $('#modal').modal('show');      //SHOW User info registration modal ( main modal )
         });
     }
-    function checkLoginState(res) { //callback for reLOGIN to facebook
+    function checkLoginState() { //callback for reLOGIN to facebook
         FB.getLoginStatus(function (res) {
             switch (res.status) {
                 case 'connected':		//fb owner LOGINED
