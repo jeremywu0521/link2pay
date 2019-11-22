@@ -11,6 +11,7 @@ var mailTransport = nodemailer.createTransport({
 });
 
 var exports;
+
 exports.sendMail_paid = async (orderUID)=>{
     var orderInfo = await db.readOrder(orderUID);
     console.log(orderInfo.owner);
@@ -30,5 +31,4 @@ exports.sendMail_paid = async (orderUID)=>{
           console.log('Unable to send email: ' + err);
         }
       });
-
 }

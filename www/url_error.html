@@ -6,7 +6,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 	<link rel="shortcut icon" href="assets/images/logo2.png" type="image/x-icon">
 
-	
 	<title>URL error -  link2pay</title>
 	<link rel="stylesheet" href="assets/web/assets/mobirise-icons/mobirise-icons.css">
 	<link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
@@ -16,45 +15,9 @@
 	<link rel="stylesheet" href="assets/dropdown/css/style.css">
 	<link rel="stylesheet" href="assets/theme/css/style.css">
 	<link rel="preload" as="style" href="assets/mobirise/css/mbr-additional.css"><link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
-	
-	<script>
-      function getCookie(cname){
-        var name = cname + "=";
-        var ca = document.cookie.split(';');
-        for(var i=0; i<ca.length; i++)
-        {
-          var c = ca[i].trim();
-          if (c.indexOf(name)==0) return c.substring(name.length,c.length);
-        }
-        return "";
-      }
-      var amount = getCookie('amount'),
-          title  = getCookie('title'),
-          description = getCookie('description'),
-          fb_profile = getCookie('fb_profile'),
-          status = getCookie('status');
-      if(status==false||status=='false'){
-          var order_status_info = 'unpaid';
-      }else{
-          var order_status_info = 'link expired';
-      }
-      if(description=='no%20description') description = '';
-      function goPayment(){
-          if(status==false||status=='false'){
-            window.location.replace('/payment/'+getCookie('orderSerial'));
-          }else{
-              alert('link expired' + status);
-          }
-        
-      }
-
-    </script>
     <!-- 手機使用超商條碼付款請橫幅 -->
 </head>
 <section class="menu cid-rFJZuJqK7i" once="menu" id="menu1-c">
-
-    
-
     <nav class="navbar navbar-expand beta-menu navbar-dropdown align-items-center navbar-fixed-top navbar-toggleable-sm bg-color transparent">
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <div class="hamburger">
@@ -90,15 +53,13 @@
     </nav>
 </section>
 
-<section class="engine"><a href=""></a></section><section class="cid-rFKb5IM3v1 mbr-fullscreen" id="header2-e">
+<section class="engine"><a href=""></a></section>
+
+<section class="cid-rFKb5IM3v1 mbr-fullscreen" id="header2-e">
     <div class="container ">
            <h1>URLｅｒｒｏｒ　or invalid</h1>
-                
-                
-                
-                
                 <div class="mbr-section-btn">
-				        	<a class="btn btn-md btn-secondary display-4" href="./index.html" >get your own payment link now!</a>
+				    <a class="btn btn-md btn-secondary display-4" href="./index.html" >get your own payment link now!</a>
                 </div>
               </div>
             </div>
@@ -108,21 +69,18 @@
 </section>
 
 <section once="footers" class="cid-rFK8yYAPQn fixed-bottom" id="footer6-d">
-
     <div class="container ">
         <div class="media-container-row align-center mbr-white">
             <div class="col-12">
                 <p class="mbr-text mb-0 mbr-fonts-style display-7">
-                    ©Mipod Studio - link2pay beta for contest demo only&nbsp;</p>
+                    ©Mipod Studio - link2pay beta for contest demo only&nbsp;
+                </p>
             </div>
         </div>
     </div>
 </section>
 
-  
- 
- 
-    
+
 <script src="assets/web/assets/jquery/jquery.min.js"></script>
 <script src="assets/popper/popper.min.js"></script>
 <script src="assets/bootstrap/js/bootstrap.min.js"></script>
@@ -134,15 +92,5 @@
 <script src="assets/parallax/jarallax.min.js"></script>
 <script src="assets/theme/js/script.js"></script>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script>
-    //final Rollup element
-    if(description.indexOf('%20'!=-1)){
-      description = description.replace(/%20/g,' ');
-    }
-        $('#order_title').text(title) ;
-        $('#order_amount').text('Amount:    '+amount+'   .NTD');
-        $('#order_description').text(description);
-        $('#order_status').text('payment status:  '+order_status_info);
-    </script>
   </body>
 </html>
