@@ -152,26 +152,7 @@
 
 
         FB.AppEvents.logPageView();   //ONLOAD  facebook login
-        FB.getLoginStatus(function (res) {
-            switch (res.status) {
-                case 'connected':		//fb owner LOGINED
-                    if (res.authResponse) {
-                        upstatus_cb(res);
-                    } else {
-                        FB.login(checkLoginState(), { scope: 'email,public_profile' });
-                    }
-                    break;
-                case 'not_authorized':			//not login
-                    FB.login(checkLoginState(), { scope: 'email,public_profile' });;
-                    break;
-                case 'unknown':					//not login
-                    FB.login(checkLoginState(), { scope: 'email,public_profile' });
-                    break;
-                default:						//not login
-                    FB.login(checkLoginState(), { scope: 'email,public_profile' });
-            }
-            //statusChangeCallback(res);
-        });
+        checkLoginState();
 
     };
 
@@ -224,7 +205,7 @@
                 console.log(data);
                 userInfo = JSON.parse(data);
                 if (userInfo.status == 'failed') {
-                    FB.login(checkLoginState(), { scope: 'email,public_profile' });
+                   // FB.login(checkLoginState(), { scope: 'email,public_profile' });
                 } else if (userInfo.status == 'success') {
                     $('#userInfo_text-receive_account').val(userInfo.receive_account.account || '');
                     $('#userInfo_text-receive_account_bank_code').val(userInfo.receive_account.bank_code || '');

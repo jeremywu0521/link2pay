@@ -8,7 +8,7 @@ var mail = require('./mail');
 const mipodstudio_middleware_express = require('./libs/security/express-middleware-mipodservices_nodes');
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
-
+var chatbot_dc = require('./chatbot_dc');
 // parse application/json
 app.use(bodyParser.json());
 app.use(mipodstudio_middleware_express.services);
