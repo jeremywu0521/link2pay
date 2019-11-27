@@ -61,7 +61,48 @@ client.on('message',async message => {
 				}
 			}else if(input[1] === 'list'){
                 DC_cb_list(message);
-			}
+			}else{
+          var embed = {embed: {
+            color: 3447003,
+            author: {
+              name: client.user.username,
+              icon_url: client.user.avatarURL
+            },
+            title:'  link2pay payment Service' ,
+            url: 'https://link2pay.mipodstudio.com/',
+            description: 'command to use',
+            fields: [
+              {
+                name: 'Registration',
+                value: "using **__!link2pay register [Email][Bank_code][account]__** to registration"
+              },
+              {
+                name: 'Change user info',
+                value: "using **__!link2pay change [Email][Bank_code][account]__** to change user info"
+              },
+              {
+                name: 'Create Link',
+                value: "using **__!link2pay create [title][amount][description]__** to create your order link"
+              },
+              {
+                name: 'Delete Link',
+                value: "using **__!link2pay delete [order unique serial]__** to delete your order link"
+              },
+              {
+                name: 'View all links status',
+                value: "using **__!link2pay list__** to view my links status"
+              }
+            ],
+            timestamp: new Date(),
+            footer: {
+              icon_url: client.user.avatarURL,
+              text: "©MipodStudio - link2pay Service for contest demo only"
+            }
+          }
+        };
+        message.channel.send(embed);
+
+      }
 		}
 	});
 client.login('NjQ4ODc2MTQ1NDA3OTUwODU4.Xd0nJQ.h_vE6bGbK8uphP3Qk8BtQ2DtL_c');
@@ -134,7 +175,7 @@ async function DC_cb_list(message,input){
                             }
                             order_fields.push({
                                     name: status,
-                                    value: order.title + '    ' + amount+'$.NTD' + '    '+ order.description
+                                    value: order.title + '    ' + order.amount+'$.NTD' + '    '+ order.description
                                 });
                         });
                         var embed = {embed: {
